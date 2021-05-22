@@ -32,4 +32,10 @@ An example of a polkadot.service file is included in the extras folder
 
 Libraries used: axios, fs, semver, execa
 
+**Tips always appreciated**
+
+- KSM: Dw9DAWiFr2WbptxSsR78A2be71Rps125UxQowcF4jZ6GEZo
+
+- DOT: 1GPiqrHHuwHuz6QjQm66n8YSGmMhVsrnMbVtYTqYR6ZA9aH
+
 
