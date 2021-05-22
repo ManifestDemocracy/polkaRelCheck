@@ -1,0 +1,33 @@
+{
+    "name": "polkarelcheck",
+    "version": "1.0.0",
+    "description": "Monitors paritytech/polkadot for new releases and updates binaries automatically",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/ManifestDemocracy/polkaRelCheck.git"
+    },
+    "keywords": [
+        "polkadot",
+        "releases",
+        "system",
+        "admin",
+        "nodejs",
+        "monitor"
+    ],
+    "author": "manifest democracy",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/ManifestDemocracy/polkaRelCheck/issues"
+    },
+    "homepage": "https://github.com/ManifestDemocracy/polkaRelCheck#readme",
+    "dependencies": {
+        "axios": "^0.21.1",
+        "execa": "^5.0.0",
+        "fs": "^0.0.1-security",
+        "semver": "^7.3.5"
+    }
+}

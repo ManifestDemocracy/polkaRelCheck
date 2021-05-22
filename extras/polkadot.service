@@ -1,0 +1,9 @@
+[Unit]
+StartLimitIntervalSec=10
+[Service]
+Restart=always
+RestartSec=45
+ExecStart= /[polkadot directory]/polkadot/target/release/./polkadot --wasm-execution Compiled --chain [polkadot/kusama] --validator --name 'validator name'
+
+[Install]
+WantedBy=multi-user.target
