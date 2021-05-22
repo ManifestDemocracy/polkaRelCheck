@@ -3,6 +3,30 @@ const axios = require('axios')
 const execa = require('execa');
 const semverSort = require('semver/functions/sort')
 const semverGt = require('semver/functions/gt')
+var newCurrent
+
+async function semCheck(loc_v, relList) {
+    var relList_ = []
+    do {
+        var new_c = relList.pop()
+        if(semverGt(new_c, loc_v)){
+            newCurrent = new_c
+            console.log( new Date(Date.now()).toLocaleString(), 'New version Released',new_c, loc_v)
+            return true
+        } else {
+            relList_.push()
+        }
+    } while (relList.length > 0)
+    do {
+        var new_c = relList_.shift()
+        if(new_c.includes('-') && new_c.split('-')[0] == loc_v){
+            newCurrent = new_c
+            console.log( new Date(Date.now()).toLocaleString(), 'New Patch Release',new_c, loc_v)
+            return true
+        }
+    } while (relList_.length > 0)
+    return false
+}
 
 async function polkaRelCheck(){
     var regExVer = new RegExp(/\d{1,2}\.\d{1,2}\.\d{1,2}/gm)
@@ -17,7 +41,6 @@ async function polkaRelCheck(){
             console.log( new Date(Date.now()).toLocaleString() , `No polkadot file exists in ${polkaDir}`)
             process.exit(1)
         }
-
     } catch (err){
         console.log( new Date(Date.now()).toLocaleString() , `Get local polkadot version failed: ${err}`)
         process.exit(2)
@@ -31,13 +54,10 @@ async function polkaRelCheck(){
     }).catch(err => console.log('releases', err))
     try {
         var relTags = polkaRels.map(x => x.tag_name)
-        relTags = await semverSort(relTags)
-        var newCurrent = relTags[relTags.length-1]
-        console.log( new Date(Date.now()).toLocaleString() , `${newCurrent} is newer than ${localCurrent}? ${semverGt(newCurrent, localCurrent)}`)
     } catch(err){
         console.log( new Date(Date.now()).toLocaleString() , err)
     }
-    if(semverGt(newCurrent, localCurrent)){
+    if(await semCheck(localCurrent, semverSort(relTags))){
         var newRelease = polkaRels.filter(x=>x.tag_name == newCurrent)
         newRelease = newRelease[0]
         var assetUrl = newRelease.assets.filter(x=>x.name == 'polkadot')
@@ -83,3 +103,4 @@ async function polkaRelCheck(){
 }
 
 polkaRelCheck()
+
