@@ -13,8 +13,8 @@ async function semCheck(loc_v, relList) {
             newCurrent = new_c
             console.log( new Date(Date.now()).toLocaleString(), 'New version Released',new_c, loc_v)
             return true
-        } else {
-            relList_.push()
+        } else if (loc_v != new_c) {
+            relList_.push(new_c)
         }
     } while (relList.length > 0)
     do {
