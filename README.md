@@ -4,9 +4,12 @@ Monitors paritytech/polkadot for new releases and updates binaries automatically
 **We recommend that you test this manually next polkadot release to make sure it has all the proper privileges to do what it needs to**
 
 Setup Instructions:
-git clone this repo
-cd polkaRelCheck
-npm install
+
+1. git clone this repo
+2. cd polkaRelCheck
+3. npm install
+
+
 Run as follows: 
 npm start [working directory with current polkadot binary] [systemctl service name]
 
