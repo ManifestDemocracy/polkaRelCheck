@@ -13,6 +13,7 @@ npm start [working directory with current polkadot binary] [systemctl service na
 example: "npm start /my/dir/polkadot/target/release/ polkadot.service"
 
 set this as a crontab entry. The below runs every 30 minutes and logs out to prc_logs.log
+
 #crontab -e
 
 */30 * * * * cd /my/dir/polkaRelCheck && /usr/bin/npm start /my/dir/polkadot/target/release/ polkadot.service >> prc_logs.log
