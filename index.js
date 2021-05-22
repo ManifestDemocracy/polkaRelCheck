@@ -12,14 +12,14 @@ async function polkaRelCheck(){
         if (fs.existsSync(`${polkaDir}/polkadot`)){
             var {stdout} = await execa.command(`./polkadot --version`,{cwd: polkaDir})
             var localCurrent = `v${stdout.match(regExVer)}`
-            console.log(`Local current version of polkadot is: ${localCurrent}`)
+            console.log( new Date(Date.now()).toLocaleString() , `Local current version of polkadot is: ${localCurrent}`)
         } else {
-            console.log(`No polkadot file exists in ${polkaDir}`)
+            console.log( new Date(Date.now()).toLocaleString() , `No polkadot file exists in ${polkaDir}`)
             process.exit(1)
         }
 
     } catch (err){
-        console.log(`Get local polkadot version failed: ${err}`)
+        console.log( new Date(Date.now()).toLocaleString() , `Get local polkadot version failed: ${err}`)
         process.exit(2)
     }
     const axOpts = {
@@ -33,52 +33,52 @@ async function polkaRelCheck(){
         var relTags = polkaRels.map(x => x.tag_name)
         relTags = await semverSort(relTags)
         var newCurrent = relTags[relTags.length-1]
-        console.log(`${newCurrent} is newer than ${localCurrent}? ${semverGt(newCurrent, localCurrent)}`)
+        console.log( new Date(Date.now()).toLocaleString() , `${newCurrent} is newer than ${localCurrent}? ${semverGt(newCurrent, localCurrent)}`)
     } catch(err){
-        console.log(err)
+        console.log( new Date(Date.now()).toLocaleString() , err)
     }
     if(semverGt(newCurrent, localCurrent)){
         var newRelease = polkaRels.filter(x=>x.tag_name == newCurrent)
         newRelease = newRelease[0]
         var assetUrl = newRelease.assets.filter(x=>x.name == 'polkadot')
         assetUrl = assetUrl[0].browser_download_url
-        console.log('Download URL for new binary',assetUrl)
+        console.log( new Date(Date.now()).toLocaleString() , 'Download URL for new binary',assetUrl)
         try {
             if (await fs.existsSync(`${polkaDir}/__polkadot`)) {
                 var {stdout} = await execa.command(`rm --force ${polkaDir}/__polkadot`)
-                console.log('deleting old backup polkadot binary',stdout)
+                console.log( new Date(Date.now()).toLocaleString(), 'deleting old backup polkadot binary',stdout)
             }
             try {
                 var {stdout} = await execa.command(`mv ${polkaDir}/polkadot ${polkaDir}/__polkadot`)
-                console.log('renaming current polkadot binary to "__polkadot"',stdout)
+                console.log( new Date(Date.now()).toLocaleString() , 'renaming current polkadot binary to "__polkadot"',stdout)
                 var {stdout} = await execa.command(`chmod -x ${polkaDir}/__polkadot`)
-                console.log('removing execution permissions on old binary "__polkadot"',stdout)
+                console.log( new Date(Date.now()).toLocaleString() , 'removing execution permissions on old binary "__polkadot"',stdout)
                 var {stdout} = await execa.command(`curl -L ${assetUrl} -o ${polkaDir}/polkadot`)
-                console.log(`downloading new polkadot binary version: ${newCurrent}`,stdout)
+                console.log( new Date(Date.now()).toLocaleString() , `downloading new polkadot binary version: ${newCurrent}`,stdout)
                 var {stdout} = await execa.command(`chmod +x ${polkaDir}/polkadot`)
-                console.log('adding execution permission to new polkadot binary',stdout)
+                console.log( new Date(Date.now()).toLocaleString() , 'adding execution permission to new polkadot binary',stdout)
             } catch (err){
-                console.log('Moving binaries, changing permission, downloading new binary',err)
+                console.log( new Date(Date.now()).toLocaleString() , 'Moving binaries, changing permission, downloading new binary',err)
             }
 
             try {
                 var {stdout} = await execa.command(`sudo systemctl daemon-reload`)
-                console.log('reloading systemctl daemon',stdout)
+                console.log( new Date(Date.now()).toLocaleString() , 'reloading systemctl daemon',stdout)
                 var {stdout} = await execa.command(`sudo systemctl restart ${polkaServiceName}`)
-                console.log('restarting polkadot service via systemctl',stdout)
+                console.log( new Date(Date.now()).toLocaleString() , 'restarting polkadot service via systemctl',stdout)
                 var {stdout} = await execa.command(`./polkadot --version`,{cwd: polkaDir})
                 var localCurrent = stdout.match(regExVer)
-                console.log(`Now running polkadot version: ${localCurrent}`)
+                console.log( new Date(Date.now()).toLocaleString() , `Now running polkadot version: ${localCurrent}`)
             } catch (err) {
-                console.log('Systemctl functions failed', err)
+                console.log( new Date(Date.now()).toLocaleString(), 'Systemctl functions failed', err)
             }
 
         } catch (err) {
-            console.log(err)
+            console.log( new Date(Date.now()).toLocaleString() , err)
         }
             process.exit()
     } else {
-        console.log('No new releases', new Date(Date.now()).toLocaleString())
+        console.log( new Date(Date.now()).toLocaleString(), 'No new releases')
     }
 }
 
