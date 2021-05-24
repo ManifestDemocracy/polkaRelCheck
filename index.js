@@ -19,17 +19,26 @@ async function semCheck(loc_v, relList) {
     } while (relList.length > 0)
     do {
         var new_c = relList_.shift()
-        if(new_c.includes('-') && new_c.split('-')[0] == loc_v){
-            newCurrent = new_c
-            console.log( new Date(Date.now()).toLocaleString(), 'New Patch Release',new_c, loc_v)
-            return true
+        if(new_c != loc_v){
+            var newAr = new_c.split('-');var locAr = loc_v.split('-');
+            if(newAr[1]&& locAr[1]){
+                if(parseInt(newAr[1]) > parseInt(locAr[1])){
+                    newCurrent = new_c
+                    console.log( new Date(Date.now()).toLocaleString(), 'New Patch Release',new_c, loc_v)
+                    return true
+                } 
+            } else if (newAr[1] && newAr[0] == locAr[0]) {
+                newCurrent = new_c
+                console.log( new Date(Date.now()).toLocaleString(), 'New Patch Release',new_c, loc_v)
+                return true
+            }
         }
     } while (relList_.length > 0)
     return false
 }
 
 async function polkaRelCheck(){
-    var regExVer = new RegExp(/\d{1,2}\.\d{1,2}\.\d{1,2}/gm)
+    var regExVer = new RegExp(/(\d{1,2}\.\d{1,2}\.\d{1,2})(\-\d{1,2})?/gm)
     var polkaDir = process.argv[2]
     var polkaServiceName = process.argv[3]
     try {
@@ -96,10 +105,11 @@ async function polkaRelCheck(){
         } catch (err) {
             console.log( new Date(Date.now()).toLocaleString() , err)
         }
-            process.exit()
+
     } else {
         console.log( new Date(Date.now()).toLocaleString(), 'No new releases')
     }
+    process.exit()
 }
 
 polkaRelCheck()
