@@ -78,6 +78,8 @@ async function polkaRelCheck(){
                 console.log( new Date(Date.now()).toLocaleString(), 'deleting old backup polkadot binary',stdout)
             }
             try {
+                var {stdout} = await execa.command(`sudo systemctl stop ${polkaServiceName}`)
+                console.log( new Date(Date.now()).toLocaleString() , 'stopping the polkadot service via systemctl',stdout)
                 var {stdout} = await execa.command(`mv ${polkaDir}/polkadot ${polkaDir}/__polkadot`)
                 console.log( new Date(Date.now()).toLocaleString() , 'renaming current polkadot binary to "__polkadot"',stdout)
                 var {stdout} = await execa.command(`chmod -x ${polkaDir}/__polkadot`)
