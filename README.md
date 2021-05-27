@@ -1,6 +1,9 @@
 # polkaRelCheck
 Monitors paritytech/polkadot for new releases and updates binaries automatically
 
+![Screenshot of log]
+(https://i.imgur.com/tH7yV1t.png)
+
 **We recommend that you test this manually next polkadot release to make sure it has all the proper privileges to do what it needs to**
 
 Setup Instructions:
