@@ -163,8 +163,13 @@ async function polkaRelCheck(){
             await execa.command(`curl -L ${assetUrl}.asc -o ${polkaDir}/polkadot.asc`)
             await execa.command(`curl -L ${assetUrl}.sha256 -o ${polkaDir}/polkadot.sha256`)
             logOut(`Running security checks on polkadot binary version: ${newCurrent}\n`)
-            shaCheck(polkaDir)
-            gpgCheck(polkaDir)
+            if (config.ignoreSecurity == "skip") {
+                shaCheck_res = false
+                gpgCheck_res = false
+            } else {
+                shaCheck(polkaDir)
+                gpgCheck(polkaDir)
+            }
         } catch (err){
             logOut(`${errMessage}`,err)
         }
@@ -203,7 +208,7 @@ async function completeUpgrade(polkaDir, gpgCheck_res, shaCheck_res){
         logOut(`Now running polkadot version: ${localCurrent}`)
     } else {
         logOut('###-###-###\nFailed security checks\n###-###-###\n',true)
-        logOut('\nSecurity checks failed, please review manually\n**Or set {ignoreSecurity: true} in the .config file [UNSAFE]**')
+        logOut('\nSecurity checks failed, please review manually\n**Or if you set {ignoreSecurity: true} in the .config file, remember to manually verify the file or fix the dependencies [UNSAFE]**')
     }
     process.exit()
 }

@@ -2,7 +2,7 @@
 Monitors paritytech/polkadot for new releases and updates binaries automatically
 PGP Signer checks. In accordance with best practice, these are validated prior to enabling executable permission on the binary. 
 
-Additionally, we added a ".config" file. Should you be having difficulties with the checks, you may set "ignoreSecurity: true" which will allow for failing checks to complete.
+Additionally, we added a ".config" file. Should you be having difficulties with the checks, you may set "ignoreSecurity: true" which will allow for failing checks to complete. Or if the checks are failing due to dependencies, you make set {ignoreSecurity: "skip"} which bypasses them entirely.
 
 
 ![Screenshot of log](https://i.imgur.com/xbxZ4cV.png)
