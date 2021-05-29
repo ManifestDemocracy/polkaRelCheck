@@ -5,7 +5,7 @@ PGP Signer checks. In accordance with best practice, these are validated prior t
 Additionally, we added a ".config" file. Should you be having difficulties with the checks, you may set "ignoreSecurity: true" which will allow for failing checks to complete.
 
 
-![Screenshot of log](https://i.imgur.com/tH7yV1t.png)
+![Screenshot of log](https://i.imgur.com/xbxZ4cV.png)
 
 **We recommend that you test this manually next polkadot release to make sure it has all the proper privileges to do what it needs to**
 
