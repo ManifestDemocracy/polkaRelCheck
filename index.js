@@ -1,9 +1,86 @@
+const EventEmitter = require('events');
+class StreamEmitter extends EventEmitter {}
+const hashEmitter = new StreamEmitter();
 const fs = require('fs')
+const dayjs = require('dayjs')
+var relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime)
 const axios = require('axios')
 const execa = require('execa');
 const semverSort = require('semver/functions/sort')
 const semverGt = require('semver/functions/gt')
+var crypto = require('crypto');
+const { clearInterval } = require('timers');
+var config = JSON.parse(fs.readFileSync(`${__dirname}/.config`,'utf-8'))
+var parityGPG = '9D4B 2B6E B8F9 7156 D196  69A9 FF08 12D4 91B9 6798'
+var regExVer = new RegExp(/(\d{1,2}\.\d{1,2}\.\d{1,2})(\-\d{1,2})?/gm)
 var newCurrent
+
+async function logOut(msg, no){
+    if(no){
+        console.log(msg)
+    } else {
+        console.log(new Date(Date.now()).toLocaleString(),msg)
+    }
+}
+
+async function shaCheck(polkaDir){
+    logOut(`Verifying SHA256 hash`)
+    var publishedSHA256 = fs.readFileSync(`${polkaDir}/polkadot.sha256`,'utf-8')
+    publishedSHA256 = publishedSHA256.split(' ')[0]
+    var binaryHashSum = crypto.createHash('sha256')
+    var newBinary = polkaDir + "/polkadot.new"
+    var fileStream = fs.ReadStream(newBinary,null)
+    fileStream.on('data', async (data) => {
+        binaryHashSum.update(data)
+    })
+    fileStream.on('end', async () => {
+        var hash = binaryHashSum.digest('hex')
+
+        if(publishedSHA256 == hash){
+            logOut(`SHA256 File:           ${hash}\nSHA256 Calculated:     ${publishedSHA256}\nMatch: ${hash == publishedSHA256}\n`,true)
+            hashEmitter.emit('SHA', true);
+        } else {
+            logOut(`[WARNING] | SHA-256 Hash of binary does not match the one retrieved with new binary | [WARNING]`)
+            hashEmitter.emit('SHA', false);
+        }
+    })
+}
+
+async function gpgCheck(polkaDir){
+    var msg =''
+    var {stdout} = await execa.command('gpg --help', stdout)
+    var version = stdout.split('\n')[0]
+    if (version) {
+        logOut(`Running GPG Checks: ${version}`)
+        var res = await execa.command(`gpg --verify ${polkaDir}/polkadot.asc ${polkaDir}/polkadot.new`).then(async (result) => {
+            var temp = result.stderr.replace(/(?:gpg: )/gm,'')
+            temp = temp.split('\n')
+            var date = temp[0].split('made')
+            date = new Date(date)
+            var rel = dayjs(date).fromNow()
+            var signer = temp[2].match(/(?<=\<)(.*?)(?=\>)/).shift()
+            var fp = temp[5].split(': ')[1]
+            msg = `Signed by: ${signer} | ${rel} | ${date.toISOString()}\nFingerprint from signature:  ${fp}\nFingerprint on file:         ${parityGPG}\nMatch: ${fp == parityGPG}\n`
+            if(fp != parityGPG){
+                msg = '[WARNING] | Signature fingerprint does not match fingerprint on file | [WARNING]\n' + msg
+                logOut(msg,true)
+                return false
+            } else if(signer !='security@parity.io'){
+                msg = '[WARNING] | Signer of this binary is not security@parity.io | [WARNING]\n' + msg
+                logOut(msg,true)
+                return false
+            } else {
+                logOut(msg, true)
+                return true
+            }
+        });
+        hashEmitter.emit('GPG', res)
+    } else {
+        logOut('Please install gpg if you want to validate GPG signatures')
+        return false
+    }
+}
 
 async function semCheck(loc_v, relList) {
     var relList_ = []
@@ -11,7 +88,7 @@ async function semCheck(loc_v, relList) {
         var new_c = relList.pop()
         if(semverGt(new_c, loc_v)){
             newCurrent = new_c
-            console.log( new Date(Date.now()).toLocaleString(), 'New version Released',new_c, loc_v)
+            logOut(`\n-------\nNew version Released ${new_c} (local: ${loc_v})\n-------`)
             return true
         } else if (loc_v != new_c) {
             relList_.push(new_c)
@@ -24,12 +101,12 @@ async function semCheck(loc_v, relList) {
             if(newAr[1]&& locAr[1]){
                 if(parseInt(newAr[1]) > parseInt(locAr[1])){
                     newCurrent = new_c
-                    console.log( new Date(Date.now()).toLocaleString(), 'New Patch Release',new_c, loc_v)
+                    logOut('New Patch Release',new_c, loc_v)
                     return true
                 } 
             } else if (newAr[1] && newAr[0] == locAr[0]) {
                 newCurrent = new_c
-                console.log( new Date(Date.now()).toLocaleString(), 'New Patch Release',new_c, loc_v)
+                logOut('New Patch Release',new_c, loc_v)
                 return true
             }
         }
@@ -38,20 +115,20 @@ async function semCheck(loc_v, relList) {
 }
 
 async function polkaRelCheck(){
-    var regExVer = new RegExp(/(\d{1,2}\.\d{1,2}\.\d{1,2})(\-\d{1,2})?/gm)
-    var polkaDir = process.argv[2]
-    var polkaServiceName = process.argv[3]
+
+    polkaDir = process.argv[2]
+    polkaServiceName = process.argv[3]
     try {
         if (fs.existsSync(`${polkaDir}/polkadot`)){
             var {stdout} = await execa.command(`./polkadot --version`,{cwd: polkaDir})
             var localCurrent = `v${stdout.match(regExVer)}`
-            console.log( new Date(Date.now()).toLocaleString() , `Local current version of polkadot is: ${localCurrent}`)
+            logOut(`Local current version of polkadot is: ${localCurrent}`)
         } else {
-            console.log( new Date(Date.now()).toLocaleString() , `No polkadot file exists in ${polkaDir}`)
+            logOut(`No polkadot file exists in ${polkaDir}`)
             process.exit(1)
         }
     } catch (err){
-        console.log( new Date(Date.now()).toLocaleString() , `Get local polkadot version failed: ${err}`)
+        logOut(`Get local polkadot version failed: ${err}`)
         process.exit(2)
     }
     const axOpts = {
@@ -60,57 +137,98 @@ async function polkaRelCheck(){
       };
     var polkaRels = await axios(axOpts).then(async (response) => {
         return response.data
-    }).catch(err => console.log('releases', err))
+    }).catch(err => logOut('releases:  '+ err))
     try {
         var relTags = polkaRels.map(x => x.tag_name)
     } catch(err){
-        console.log( new Date(Date.now()).toLocaleString() , err)
+        logOut(err)
     }
     if(await semCheck(localCurrent, semverSort(relTags))){
+        logOut(`.config ignoreSecurity is set to: ${config.ignoreSecurity}`)
+        var errMessage =  'Failed moving binaries, changing permission, downloading new binary'
         var newRelease = polkaRels.filter(x=>x.tag_name == newCurrent)
         newRelease = newRelease[0]
         var assetUrl = newRelease.assets.filter(x=>x.name == 'polkadot')
         assetUrl = assetUrl[0].browser_download_url
-        console.log( new Date(Date.now()).toLocaleString() , 'Download URL for new binary',assetUrl)
+        logOut(`Download URL for the new binary ${assetUrl}`)
         try {
             if (await fs.existsSync(`${polkaDir}/__polkadot`)) {
-                var {stdout} = await execa.command(`rm --force ${polkaDir}/__polkadot`)
-                console.log( new Date(Date.now()).toLocaleString(), 'deleting old backup polkadot binary',stdout)
+                var {stdout} = await execa.command(`rm --force ${polkaDir}/polkadot.old`)
+                logOut('deleting old backup polkadot binary')
             }
-            try {
-                var {stdout} = await execa.command(`mv ${polkaDir}/polkadot ${polkaDir}/__polkadot`)
-                console.log( new Date(Date.now()).toLocaleString() , 'renaming current polkadot binary to "__polkadot"',stdout)
-                var {stdout} = await execa.command(`chmod -x ${polkaDir}/__polkadot`)
-                console.log( new Date(Date.now()).toLocaleString() , 'removing execution permissions on old binary "__polkadot"',stdout)
-                var {stdout} = await execa.command(`curl -L ${assetUrl} -o ${polkaDir}/polkadot`)
-                console.log( new Date(Date.now()).toLocaleString() , `downloading new polkadot binary version: ${newCurrent}`,stdout)
-                var {stdout} = await execa.command(`chmod +x ${polkaDir}/polkadot`)
-                console.log( new Date(Date.now()).toLocaleString() , 'adding execution permission to new polkadot binary',stdout)
-            } catch (err){
-                console.log( new Date(Date.now()).toLocaleString() , 'Moving binaries, changing permission, downloading new binary',err)
-            }
-
-            try {
-                var {stdout} = await execa.command(`sudo systemctl daemon-reload`)
-                console.log( new Date(Date.now()).toLocaleString() , 'reloading systemctl daemon',stdout)
-                var {stdout} = await execa.command(`sudo systemctl restart ${polkaServiceName}`)
-                console.log( new Date(Date.now()).toLocaleString() , 'restarting polkadot service via systemctl',stdout)
-                var {stdout} = await execa.command(`./polkadot --version`,{cwd: polkaDir})
-                var localCurrent = stdout.match(regExVer)
-                console.log( new Date(Date.now()).toLocaleString() , `Now running polkadot version: ${localCurrent}`)
-            } catch (err) {
-                console.log( new Date(Date.now()).toLocaleString(), 'Systemctl functions failed', err)
-            }
-
-        } catch (err) {
-            console.log( new Date(Date.now()).toLocaleString() , err)
+            var {stdout} = await execa.command(`rm --force ${polkaDir}/polkadot.sha256 && rm --force ${polkaDir}/polkadot.asc`)
+            logOut('Removing old gpg and hash files')
+            logOut(`Downloading new polkadot binary version: ${newCurrent} with SHA-256 Hash and PGP Signature`)
+            await execa.command(`curl -L ${assetUrl} -o ${polkaDir}/polkadot.new`)
+            await execa.command(`curl -L ${assetUrl}.asc -o ${polkaDir}/polkadot.asc`)
+            await execa.command(`curl -L ${assetUrl}.sha256 -o ${polkaDir}/polkadot.sha256`)
+            logOut(`Running security checks on polkadot binary version: ${newCurrent}\n`)
+            shaCheck(polkaDir)
+            gpgCheck(polkaDir)
+        } catch (err){
+            logOut(`${errMessage}`,err)
         }
-
     } else {
-        console.log( new Date(Date.now()).toLocaleString(), 'No new releases')
+        logOut('No new releases')
+        process.exit()
+    }
+}
+
+
+async function completeUpgrade(polkaDir, gpgCheck_res, shaCheck_res){
+    if((gpgCheck_res && shaCheck_res) || config.ignoreSecurity){
+        logOut('###-###-###\nPassed security checks\n###-###-###\n',true)
+        var {stdout} = await execa.command(`mv ${polkaDir}/polkadot ${polkaDir}/polkadot.old`)
+        logOut(`Renaming current polkadot binary to "polkadot.old"`)
+        
+        var {stdout} = await execa.command(`chmod -x ${polkaDir}/polkadot.old`)
+        logOut(`Removing execution permissions on old binary "polkadot.old"`)
+        
+        var {stdout} = await execa.command(`mv ${polkaDir}/polkadot.new ${polkaDir}/polkadot`)
+        logOut(`Renaming new polkadot binary from polkadot.new to "polkadot"`)
+        
+        var {stdout} = await execa.command(`chmod +x ${polkaDir}/polkadot`)
+        logOut('Adding execution permission to new polkadot binary')
+        
+        errMessage = 'Systemctl functions failed'
+        var {stdout} = await execa.command(`sudo systemctl daemon-reload`)
+        logOut('Reloading systemctl daemon')
+        
+        var {stdout} = await execa.command(`sudo systemctl restart ${polkaServiceName}`)
+        logOut('Restarting polkadot service via systemctl')
+        
+        var {stdout} = await execa.command(`./polkadot --version`,{cwd: polkaDir})
+        var localCurrent = stdout.match(regExVer)
+        logOut(`Upgrade started: ${dayjs(startTime).fromNow()}`)
+        logOut(`Now running polkadot version: ${localCurrent}`)
+    } else {
+        logOut('###-###-###\nFailed security checks\n###-###-###\n',true)
+        logOut('\nSecurity checks failed, please review manually\n**Or set {ignoreSecurity: true} in the .config file [UNSAFE]**')
     }
     process.exit()
 }
+
+var startTime = Date.now()
+var polkaServiceName
+var polkaDir
+var gpgCheck_res
+var shaCheck_res
+
+hashEmitter.on('SHA', (match) => {
+    shaCheck_res = match
+});
+
+hashEmitter.on('GPG', (match) => {
+    gpgCheck_res = match
+});
+
+var streamWait = setInterval(() => {
+    if(gpgCheck_res != null && shaCheck_res != null) {
+        clearInterval(streamWait)
+        completeUpgrade(polkaDir,gpgCheck_res,shaCheck_res)
+    }
+}, 5000);
+
 
 polkaRelCheck()
 

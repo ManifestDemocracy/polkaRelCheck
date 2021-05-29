@@ -26,6 +26,7 @@
     "homepage": "https://github.com/ManifestDemocracy/polkaRelCheck#readme",
     "dependencies": {
         "axios": "^0.21.1",
+        "dayjs": "^1.10.5",
         "execa": "^5.0.0",
         "fs": "^0.0.1-security",
         "semver": "^7.3.5"
