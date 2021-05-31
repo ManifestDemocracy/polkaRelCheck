@@ -1,6 +1,8 @@
 # polkaRelCheck
-Monitors paritytech/polkadot for new releases and updates binaries automatically
-PGP Signer checks. In accordance with best practice, these are validated prior to enabling executable permission on the binary. 
+As mentioned in [Dot Leap 40](https://newsletter.dotleap.com/p/dotleap-40), this tool monitors paritytech/polkadot for new releases and updates binaries automatically after validating SHA-256 and PGP Signature/Signer.
+*In accordance with best practice, SHA-256 and PGP Signature are validated prior to enabling executable permission on the binary.*
+
+**Please vote and show support:** Paradoxxx recently nominated this tool for a tip [on polkassembly](https://kusama.polkassembly.io/tip/0x1f81fc887a2255144cc18ebe260b89acb55b2870576659cd88b664bf94e08b91)
 
 Additionally, we added a ".config" file. Should you be having difficulties with the checks, you may set "ignoreSecurity: true" which will allow for failing checks to complete. Or if the checks are failing due to dependencies, you make set {ignoreSecurity: "skip"} which bypasses them entirely.
 
@@ -36,9 +38,10 @@ set this as a crontab entry. The below runs every 30 minutes and logs out to prc
 
 An example of a polkadot.service file is included in the extras folder. 
 Service files go in the /etc/systemd/system folder. 
-Then run "sudo systemctl enable [name of file]
+Then run >```sudo systemctl enable [filname].service```
 
-**Libraries used:** axios, fs, semver, execa, dayjs
+**Libraries used:** axios, fs, semver, execa, dayjs, PGP*
+*PGP supplied by OS packages. use DNF, Yum, Apt etc.. to install if you dont have already*
 
 ## Want to test?
 Download an older version of polkadot, use the working directory for that as the folder you input in the command line
