@@ -11,32 +11,50 @@ Additionally, we added a ".config" file. Should you be having difficulties with 
 
 Setup Instructions:
 
-1. git clone this repo
-2. cd polkaRelCheck
-3. npm install
+1. >`git clone https://github.com/ManifestDemocracy/polkaRelCheck.git`
+2. >`cd polkaRelCheck`
+3. >`npm install`
 
 
-Run as follows: 
-npm start [working directory with current polkadot binary] [systemctl service name]
+## How to run: 
+>`npm start [working directory with current polkadot binary] [systemctl service name]`
 
-example: "npm start /my/dir/polkadot/target/release/ polkadot.service"
+**example:** 
+>`npm start /my/dir/polkadot/target/release/ polkadot.service`
 
 set this as a crontab entry. The below runs every 30 minutes and logs out to prc_logs.log
 
-#crontab -e
+>`#crontab -e`
 
-*/30 * * * * cd /my/dir/polkaRelCheck && /usr/bin/npm start /my/dir/polkadot/target/release/ polkadot.service >> prc_logs.log
+>`*/30 * * * * cd /my/dir/polkaRelCheck && /usr/bin/npm start /my/dir/polkadot/target/release/ polkadot.service >> prc_logs.log`
 
+## Prequisites:
 
-
-Prequisites:
 1. gpg command line and Node 14 LTS
 2. Expects a late version of the polkadot binary to be present. Location provided in command line (argv[3])
 3. Expects a systemctl serviice running polkadot as a service to restart when upgrade completes. Name provided in command line (argv[4])
 
-An example of a polkadot.service file is included in the extras folder
+An example of a polkadot.service file is included in the extras folder. 
+Service files go in the /etc/systemd/system folder. 
+Then run "sudo systemctl enable [name of file]
 
-Libraries used: axios, fs, semver, execa, dayjs
+**Libraries used:** axios, fs, semver, execa, dayjs
+
+## Want to test?
+Download an older version of polkadot, use the working directory for that as the folder you input in the command line
+Add a dummy systemctl service to round out the test
+
+## Looking for a bash script?
+This basically what the NodeJS code is doing under the hood
+```
+rm --force /home/cryptolunar/polkadot/target/release/__polka
+mv /home/cryptolunar/polkadot/target/release/polkadot  /home/cryptolunar/polkadot/target/release/__polka
+curl -sL https://github.com/paritytech/polkadot/releases/download/v0.9.2/polkadot -o /home/cryptolunar/polkadot/target/release/polkadot
+sudo chmod +x /home/cryptolunar/polkadot/target/release/polkadot
+sudo systemctl daemon-reload
+sudo systemctl stop polkadot
+sudo systemctl start polkadot
+```
 
 **Tips always appreciated**
 
