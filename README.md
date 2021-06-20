@@ -1,4 +1,4 @@
-##Update 2021-JUNE-20 for v0.9.5
+## Update 2021-JUNE-20 for v0.9.5
 Solved issue with version mismatch between tag and binary version
 
 # polkaRelCheck
