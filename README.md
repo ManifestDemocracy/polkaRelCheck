@@ -1,13 +1,12 @@
-### please manually check release v0.9.5 as the release tag and the binary version do not match (v0.9.5-3 is the binary version in v0.9.5)
-
+### please manually check release v0.9.5 
+The release tag and the binary version do not match (v0.9.5-3 is the binary version in v0.9.5)
+Can cause endless loop of downloading new binary or failing signature checks depending
 
 # polkaRelCheck
 As mentioned in [Dot Leap 40](https://newsletter.dotleap.com/p/dotleap-40), this tool monitors paritytech/polkadot for new releases and updates binaries automatically after validating SHA-256 and PGP Signature/Signer.
 *In accordance with best practice, SHA-256 and PGP Signature are validated prior to enabling executable permission on the binary.*
 
-**Please vote and show support:** Paradoxxx recently nominated this tool for a tip [on polkassembly](https://kusama.polkassembly.io/tip/0x1f81fc887a2255144cc18ebe260b89acb55b2870576659cd88b664bf94e08b91) or [on subscan](https://kusama.subscan.io/treasury_tip/0x1f81fc887a2255144cc18ebe260b89acb55b2870576659cd88b664bf94e08b91)
-
-Additionally, we added a ".config" file. Should you be having difficulties with the checks, you may set "ignoreSecurity: true" which will allow for failing checks to complete. Or if the checks are failing due to dependencies, you make set {ignoreSecurity: "skip"} which bypasses them entirely.
+Additionally, we added a ".config" file. Should you be having difficulties with the checks, you may set {"ignoreSecurity": "true"} which will allow for failing checks to complete. Or if the checks are failing due to dependencies, you make set {ignoreSecurity: "skip"} which bypasses them entirely.
 
 
 ![Screenshot of log](https://i.imgur.com/xbxZ4cV.png)
