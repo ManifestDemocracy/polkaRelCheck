@@ -1,4 +1,4 @@
-###please manually check release v0.9.5 as the release tag and the binary version do not match (v0.9.5-3 is the binary version in v0.9.5)
+### please manually check release v0.9.5 as the release tag and the binary version do not match (v0.9.5-3 is the binary version in v0.9.5)
 
 
 # polkaRelCheck
