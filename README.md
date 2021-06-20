@@ -29,7 +29,7 @@ set this as a crontab entry. The below runs every 30 minutes and logs out to prc
 
 >`#crontab -e`
 
->`*/30 * * * * cd /my/dir/polkaRelCheck && /usr/bin/npm start /my/dir/polkadot/target/release/ polkadot.service >> prc_logs.log`
+>`*/30 * * * * cd /my/dir/polkaRelCheck && /usr/bin/node index.js /my/dir/polkadot/target/release/ polkadot.service >> prc_logs.log`
 
 ## Prequisites:
 
