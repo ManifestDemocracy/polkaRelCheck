@@ -1,7 +1,5 @@
-### please manually check release v0.9.5 
-The release tag and the binary version do not match (v0.9.5-3 is the binary version in v0.9.5) due to a faulty regex
-
-This can cause endless loop of downloading new binary or failing signature checks depending. Bugfix in process
+##Update 2021-JUNE-20 for v0.9.5
+Solved issue with version mismatch between tag and binary version
 
 # polkaRelCheck
 As mentioned in [Dot Leap 40](https://newsletter.dotleap.com/p/dotleap-40), this tool monitors paritytech/polkadot for new releases and updates binaries automatically after validating SHA-256 and PGP Signature/Signer.
