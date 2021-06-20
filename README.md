@@ -1,3 +1,6 @@
+###please manually check release v0.9.5 as the release tag and the binary version do not match (v0.9.5-3 is the binary version in v0.9.5)
+
+
 # polkaRelCheck
 As mentioned in [Dot Leap 40](https://newsletter.dotleap.com/p/dotleap-40), this tool monitors paritytech/polkadot for new releases and updates binaries automatically after validating SHA-256 and PGP Signature/Signer.
 *In accordance with best practice, SHA-256 and PGP Signature are validated prior to enabling executable permission on the binary.*
