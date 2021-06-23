@@ -1,5 +1,7 @@
-## Update 2021-JUNE-20 for v0.9.5
-Solved issue with version mismatch between tag and binary version
+## Update 2021-June-23 for v0.9.6
+Flawless execution from v0.9.5 to v0.9.6 on both Polkadot and Kusama validators
+
+![v095_v096](https://i.imgur.com/v9Wn6Di.png)
 
 # polkaRelCheck
 As mentioned in [Dot Leap 40](https://newsletter.dotleap.com/p/dotleap-40), this tool monitors paritytech/polkadot for new releases and updates binaries automatically after validating SHA-256 and PGP Signature/Signer.
@@ -7,8 +9,6 @@ As mentioned in [Dot Leap 40](https://newsletter.dotleap.com/p/dotleap-40), this
 
 Additionally, we added a ".config" file. Should you be having difficulties with the checks, you may set {"ignoreSecurity": "true"} which will allow for failing checks to complete. Or if the checks are failing due to dependencies, you make set {ignoreSecurity: "skip"} which bypasses them entirely.
 
-
-![Screenshot of log](https://i.imgur.com/xbxZ4cV.png)
 
 **We recommend that you test this manually next polkadot release to make sure it has all the proper privileges to do what it needs to**
 
