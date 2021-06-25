@@ -1,3 +1,6 @@
+## Update 2021-June-25 for v0.9.7
+Added command to automatically retrieve pgp keys for security@parity.io
+
 ## Update 2021-June-23 for v0.9.6
 Flawless execution from v0.9.5 to v0.9.6 on both Polkadot and Kusama validators
 
