@@ -50,8 +50,8 @@ async function gpgCheck(polkaDir) {
     var msg = ''
     var { stdout } = await execa.command('gpg --help', stdout)
     var version = stdout.split('\n')[0]
-    let serialPGP = parityGPG.replace(' ', '')
-    var { stdout } = await execa.command(`gpg --recv-keys --keyserver hkps://keys.mailvelope.com ${serialPGP}`, stdout)
+    var serialPGP = parityGPG.replace(/\s/g, '')
+    await execa.command(`gpg --recv-keys --keyserver hkps://keys.mailvelope.com ${serialPGP}`)
     if (version) {
         logOut(`Running GPG Checks: ${version}`)
         var res = await execa.command(`gpg --verify ${polkaDir}/polkadot.asc ${polkaDir}/polkadot.new`)
@@ -85,7 +85,6 @@ async function gpgCheck(polkaDir) {
 }
 
 async function polkaRelCheck() {
-
     polkaDir = process.argv[2]
     polkaServiceName = process.argv[3]
     try {
