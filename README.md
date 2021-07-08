@@ -1,10 +1,12 @@
-## Update 2021-June-25 for v0.9.7
-Added command to automatically retrieve pgp keys for security@parity.io
+## Status 2021-July-07 for v0.9.8
+No issues
 
-## Update 2021-June-23 for v0.9.6
-Flawless execution from v0.9.5 to v0.9.6 on both Polkadot and Kusama validators
+## Previous Updates
+* Update 2021-June-25 for v0.9.7
+  * Added command to automatically retrieve pgp keys for security@parity.io
 
-![v095_v096](https://i.imgur.com/YwdREev.png)
+* Update 2021-June-23 for v0.9.6
+  * Flawless execution from v0.9.5 to v0.9.6 on both Polkadot and Kusama validators
 
 # polkaRelCheck
 As mentioned in [Dot Leap 40](https://newsletter.dotleap.com/p/dotleap-40), this tool monitors paritytech/polkadot for new releases and updates binaries automatically after validating SHA-256 and PGP Signature/Signer.
@@ -62,6 +64,7 @@ sudo systemctl daemon-reload
 sudo systemctl stop polkadot
 sudo systemctl start polkadot
 ```
+![v095_v096](https://i.imgur.com/YwdREev.png)
 
 **Tips always appreciated**
 
