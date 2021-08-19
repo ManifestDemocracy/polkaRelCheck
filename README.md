@@ -1,7 +1,8 @@
-## Status 2021-July-07 for v0.9.8
+## Status 2021-August-18 for v0.9.9
 No issues
 
 ## Previous Updates
+* Update 2021-July-7 for v0.9.8 | No issues
 * Update 2021-June-25 for v0.9.7
   * Added command to automatically retrieve pgp keys for security@parity.io
 
